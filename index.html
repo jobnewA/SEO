@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>أداة SEO المتكاملة</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#f5f7fa;color:#1a1a1a;direction:rtl}
+.header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:1.5rem 2rem;text-align:center}
+.header h1{font-size:1.6rem;font-weight:700;margin-bottom:4px}
+.header p{font-size:13px;opacity:.8}
+.container{max-width:1012px;margin:2rem auto;padding:0 1rem}
+.api-bar{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.api-bar label{font-size:13px;font-weight:600;color:#374151;white-space:nowrap}
+.api-bar input{flex:1;min-width:200px;border:1px solid #d1d5db;border-radius:6px;padding:7px 12px;font-size:13px}
+.api-bar .api-status{font-size:12px;padding:3px 10px;border-radius:99px;background:#dcfce7;color:#166534}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{padding:9px 18px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#6b7280;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.tab.active{background:#2563eb;color:#fff;border-color:transparent}
+.tab:hover:not(.active){background:#f1f5f9;color:#1e3a5f}
+.panel{display:none}.panel.active{display:block}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.section-title{font-size:15px;font-weight:700;color:#1e3a5f;margin-bottom:1rem;padding-bottom:8px;border-bottom:2px solid #e2e8f0}
+label{font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px}
+input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:7px;padding:9px 12px;font-size:14px;background:#fff;color:#1a1a1a;font-family:inherit;transition:.15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea{resize:vertical;min-height:80px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.field{margin-bottom:12px}
+.hint{font-size:11px;color:#9ca3af;margin-top:3px}
+.counter{font-size:11px;color:#9ca3af;text-align:left;margin-top:2px}
+.counter.warn{color:#f59e0b}.counter.ok{color:#10b981}
+.btn{padding:10px 22px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#374151;cursor:pointer;font-size:14px;font-weight:600;transition:.15s}
+.btn:hover{background:#f1f5f9}
+.btn-primary{background:#2563eb;color:#fff;border-color:transparent}
+.btn-primary:hover{background:#1d4ed8}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-danger{color:#dc2626;border-color:#fca5a5}
+.output{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;font-family:'Courier New',monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;color:#1a1a1a;max-height:400px;overflow-y:auto;direction:ltr;text-align:left}
+.output-card{margin-top:1rem}
+.output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.output-label{font-size:12px;font-weight:700;color:#6b7280}
+.copy-btn{padding:4px 12px;font-size:11px;border:1px solid #d1d5db;border-radius:5px;background:#fff;cursor:pointer;color:#374151}
+.copy-btn:hover{background:#f1f5f9}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700}
+.badge-ok{background:#dcfce7;color:#166534}
+.badge-warn{background:#fef9c3;color:#854d0e}
+.badge-err{background:#fee2e2;color:#991b1b}
+.issue-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.issue-item:last-child{border-bottom:none}
+.seg-btns{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.seg-btn{padding:7px 16px;border:1px solid #d1d5db;border-radius:99px;font-size:13px;background:#fff;color:#6b7280;cursor:pointer;font-weight:600}
+.seg-btn.on{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+.img-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.img-row input{flex:1}
+.loading-bar{display:none;height:4px;background:linear-gradient(90deg,#2563eb,#60a5fa);border-radius:99px;margin:8px 0;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem}
+.stat-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.9rem;text-align:center}
+.stat-num{font-size:20px;font-weight:700;color:#1e3a5f}
+.stat-lbl{font-size:11px;color:#6b7280;margin-top:2px}
+.stat-card.green .stat-num{color:#16a34a}
+.stat-card.red .stat-num{color:#dc2626}
+.stat-card.amber .stat-num{color:#d97706}
+.meta-result{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;font-size:14px;line-height:1.8;color:#1a1a1a}
+.faq-item{margin-bottom:12px;padding:10px;background:#f0f9ff;border-radius:8px;font-size:13px}
+.faq-q{font-weight:700;color:#1e3a5f;margin-bottom:4px}
+.faq-a{color:#374151}
+.kw-tags{display:flex;flex-wrap:wrap;gap:6px}
+.kw-tag{background:#dbeafe;color:#1d4ed8;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600}
+.tips-section{margin-bottom:1rem}
+.tips-priority{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-left:6px}
+.tips-high{background:#fee2e2;color:#991b1b}
+.tips-med{background:#fef9c3;color:#854d0e}
+.tips-low{background:#dcfce7;color:#166534}
+@media(max-width:600px){.row,.grid4{grid-template-columns:1fr}.api-bar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔍 أداة SEO المتكاملة</h1>
+  <p>مولد Schema · Meta & Keywords · تحليل الصفحة · اقتراحات التحسين</p>
+  <p style="font-size:11px;opacity:.6;margin-top:4px">مدعوم بـ OpenRouter — اختر أي موديل مجاني من openrouter.ai/models?max_price=0</p>
+</div>
+
+<div class="container">
+
+  <!-- API Key Bar -->
+  <div class="api-bar" style="flex-wrap:wrap;gap:10px;align-items:center">
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:220px">
+      <label style="white-space:nowrap;margin:0">🔑 OpenRouter Key:</label>
+      <input type="password" id="api-key" placeholder="sk-or-v1-..." oninput="checkKey()" style="flex:1"/>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:240px">
+      <label style="white-space:nowrap;margin:0">🤖 الموديل:</label>
+      <input type="text" id="model-id" value=" " placeholder=" " style="flex:1;font-size:12px"/>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span id="key-status" style="font-size:12px;padding:3px 10px;border-radius:99px;background:#fef9c3;color:#854d0e">أدخل المفتاح</span>
+      <a href="https://openrouter.ai/keys" target="_blank" style="font-size:12px;color:#2563eb">احصل على مفتاح</a>
+      <a href="https://openrouter.ai/models?max_price=0" target="_blank" style="font-size:12px;color:#16a34a">موديلات مجانية ↗</a>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('schema',this)">① مولد Schema</button>
+    <button class="tab" onclick="switchTab('meta',this)">② Meta & Keywords</button>
+    <button class="tab" onclick="switchTab('audit',this)">③ تحليل الصفحة</button>
+    <button class="tab" onclick="switchTab('tips',this)">④ اقتراحات التحسين</button>
+  </div>
+
+  <!-- ===== PANEL 1: Schema ===== -->
+  <div class="panel active" id="panel-schema">
+    <div class="card">
+      <p class="section-title">نوع الـ Schema</p>
+      <div class="seg-btns">
+        <button class="seg-btn on" onclick="setSchemaType('Article',this)">Article</button>
+        <button class="seg-btn" onclick="setSchemaType('NewsArticle',this)">NewsArticle</button>
+        <button class="seg-btn" onclick="setSchemaType('BlogPosting',this)">BlogPosting</button>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Article URL</label>
+          <input type="url" id="s-url" placeholder="https://example.com/article"/>
+        </div>
+        <div class="field">
+          <label>Headline</label>
+          <input type="text" id="s-headline" maxlength="110" oninput="counter('s-headline','s-hl-c',110)" placeholder="عنوان المقال"/>
+          <div class="counter" id="s-hl-c">0 / 110</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>وصف قصير (description)</label>
+        <textarea id="s-desc" placeholder="وصف مختصر للمقال..."></textarea>
+      </div>
+
+      <label style="margin-bottom:8px">الصور (Image URLs)</label>
+      <div id="img-list">
+        <div class="img-row">
+          <input type="url" placeholder="Image URL #1" class="img-input"/>
+          <button class="btn btn-sm" onclick="addImg()">+ صورة</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:14px">
+        <div class="field">
+          <label>نوع المؤلف</label>
+          <select id="s-atype"><option value="Person">Person</option><option value="Organization">Organization</option></select>
+        </div>
+        <div class="field">
+          <label>اسم المؤلف</label>
+          <input type="text" id="s-aname" placeholder="اسم الكاتب"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Author URL</label>
+          <input type="url" id="s-aurl" placeholder="https://..."/>
+        </div>
+        <div class="field">
+          <label>Publisher</label>
+          <input type="text" id="s-pub" placeholder="اسم الناشر"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Publisher Logo URL</label>
+        <input type="url" id="s-logo" placeholder="https://example.com/logo.png"/>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:1rem">
+        <button class="btn btn-primary" onclick="generateSchema()">توليد الـ Schema</button>
+        <button class="btn" onclick="clearSchema()">مسح الكل</button>
+      </div>
+    </div>
+
+    <div id="schema-out" style="display:none" class="card">
+      <div class="output-header">
+        <span class="output-label">Schema JSON-LD — انسخه والصقه في &lt;head&gt; صفحتك</span>
+        <button class="copy-btn" onclick="copyEl('schema-code')">📋 نسخ</button>
+      </div>
+      <div class="output" id="schema-code"></div>
+      <p><a href="https://search.google.com/test/rich-results" target="_blank" style="font-size:12px;color:#16a34a;"> يمكنك عمل test للسكيما ↗</a></p>
+    </div>
+  </div>
+
+  <!-- ===== PANEL 2: Meta & Keywords ===== -->
+  <div class="panel" id="panel-meta">
+    <div class="card">
+      <p class="section-title">Meta Description & Keywords</p>
+      <div class="field">
+        <label>الكلمة المفتاحية الرئيسية *</label>
+        <input type="text" id="kw" placeholder="مثال: أفضل مطاعم القاهرة"/>
+      </div>
+      <div class="field">
+        <label>سياق المحتوى (اختياري)</label>
+        <textarea id="kw-ctx" placeholder="وصف مختصر عن موضوع المقال أو الصفحة..." style="min-height:60px"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="generateMeta()">توليد المحتوى</button>
+      <div class="loading-bar" id="meta-loader"></div>
+    </div>
+
+    <div id="meta-out" style="display:none">
+      <div class="card output-card">
+        <div class="output-header">
+          <span class="output-label">Meta Description — 150 حرف</span>
+          <button class="copy-btn" onclick="copyEl('meta-150')">📋 نسخ</button>
+        </div>
+        <div class="meta-result" id="meta-150"></div>
+      </div>
+      <div class="card output-card">
+        <div class="output-header">
+          <span class="output-label">Meta Description — 180 حرف</span>
+          <button class="copy-btn" onclick="copyEl('meta-180')">📋 نسخ</button>
+        </div>
+        <div class="meta-result" id="meta-180"></div>
+      </div>
+      <div class="card output-card">
+        <div class="output-header">
+          <span class="output-label">الأسئلة الشائعة FAQ</span>
+          <button class="copy-btn" onclick="copyFaq()">📋 نسخ</button>
+        </div>
+        <div id="meta-faq"></div>
+      </div>
+      <div class="card output-card">
+        <div class="output-header">
+          <span class="output-label">كلمات مفتاحية SEO</span>
+          <button class="copy-btn" onclick="copyEl('meta-kws')">📋 نسخ</button>
+        </div>
+        <div class="kw-tags" id="meta-kws"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANEL 3: Audit ===== -->
+  <div class="panel" id="panel-audit">
+    <div class="card">
+      <p class="section-title">تحليل شامل للصفحة / المتجر</p>
+      <div class="field">
+        <label>رابط الصفحة *</label>
+        <input type="url" id="audit-url" placeholder="https://example.com/product"/>
+      </div>
+      <button class="btn btn-primary" onclick="runAudit()">تشغيل التحليل</button>
+      <div class="loading-bar" id="audit-loader"></div>
+    </div>
+    <div id="audit-out" style="display:none">
+      <div class="card">
+        <p class="section-title">نتائج التحليل</p>
+        <div class="grid4" id="audit-stats"></div>
+        <div id="audit-checks"></div>
+        <hr style="margin:1rem 0;border:none;border-top:1px solid #e2e8f0"/>
+        <p style="font-size:13px;font-weight:700;color:#6b7280;margin-bottom:8px">تفاصيل المشاكل</p>
+        <div id="audit-issues"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANEL 4: Tips ===== -->
+  <div class="panel" id="panel-tips">
+    <div class="card">
+      <p class="section-title">اقتراحات التحسين</p>
+      <div class="field">
+        <label>رابط الموقع *</label>
+        <input type="url" id="tips-url" placeholder="https://example.com"/>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>نوع الموقع</label>
+          <select id="tips-type">
+            <option>متجر إلكتروني</option>
+            <option>مدونة</option>
+            <option>موقع خدمات</option>
+            <option>موقع شركة</option>
+            <option>موقع أخبار</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>اللغة المستهدفة</label>
+          <select id="tips-lang">
+            <option>العربية</option>
+            <option>الإنجليزية</option>
+            <option>كلاهما</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>ملاحظات إضافية</label>
+        <textarea id="tips-notes" placeholder="أي مشاكل معروفة أو أهداف محددة..." style="min-height:60px"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="generateTips()">توليد الاقتراحات</button>
+      <div class="loading-bar" id="tips-loader"></div>
+    </div>
+    <div id="tips-out" style="display:none" class="card">
+      <div class="output-header">
+        <span class="output-label">اقتراحات التحسين</span>
+        <button class="copy-btn" onclick="copyEl('tips-content')">📋 نسخ</button>
+      </div>
+      <div id="tips-content" style="font-size:13px;line-height:1.9;color:#1a1a1a;margin-top:.5rem"></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+let schemaType = 'Article';
+let imgCount = 1;
+
+// ── helpers ──────────────────────────────────────────────
+function switchTab(t, el) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + t).classList.add('active');
+}
+function setSchemaType(t, el) {
+  schemaType = t;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+function counter(inp, cnt, max) {
+  const v = document.getElementById(inp).value.length;
+  const el = document.getElementById(cnt);
+  el.textContent = v + ' / ' + max;
+  el.className = 'counter ' + (v > max ? 'warn' : v > max * .8 ? 'ok' : '');
+}
+function checkKey() {
+  const k = document.getElementById('api-key').value.trim();
+  const s = document.getElementById('key-status');
+  if (k.startsWith('sk-or-') && k.length > 10) { s.textContent = 'مفعّل ✓'; s.style.background = '#dcfce7'; s.style.color = '#166534'; }
+  else if (k.length > 5) { s.textContent = 'مفتاح غير صحيح'; s.style.background = '#fee2e2'; s.style.color = '#991b1b'; }
+  else { s.textContent = 'أدخل المفتاح'; s.style.background = '#fef9c3'; s.style.color = '#854d0e'; }
+}
+function getKey() {
+  const k = document.getElementById('api-key').value.trim();
+  if (!k) { alert('الرجاء إدخال OpenRouter API Key أولاً\nاحصل عليه مجاناً من:\nhttps://openrouter.ai/keys'); return null; }
+  return k;
+}
+function copyEl(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.textContent || el.innerText).then(() => {
+    const btns = document.querySelectorAll('.copy-btn');
+    btns.forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(id)) {
+      const orig = b.textContent; b.textContent = 'تم ✓'; setTimeout(() => b.textContent = orig, 1500);
+    }});
+  });
+}
+function copyFaq() {
+  const items = document.querySelectorAll('.faq-item');
+  const text = Array.from(items).map(el => {
+    const q = el.querySelector('.faq-q').textContent;
+    const a = el.querySelector('.faq-a').textContent;
+    return q + '\n' + a;
+  }).join('\n\n');
+  navigator.clipboard.writeText(text).then(() => alert('تم النسخ!'));
+}
+async function callClaude(prompt) {
+  const key = getKey();
+  if (!key) return null;
+  const model = document.getElementById('model-id').value.trim() || 'google/gemini-2.0-flash-exp:free';
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key,
+      'HTTP-Referer': 'https://seo-tool.local',
+      'X-Title': 'SEO Tool'
+    },
+    body: JSON.stringify({ model: model, messages: [{ role: 'user', content: prompt }], max_tokens: 1500 })
+  });
+  if (!res.ok) { const e = await res.json(); alert('خطأ API: ' + (e.error?.message || res.status)); return null; }
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content || '';
+}
+
+// ── Schema ────────────────────────────────────────────────
+function addImg() {
+  imgCount++;
+  const d = document.createElement('div'); d.className = 'img-row';
+  d.innerHTML = `<input type="url" placeholder="Image URL #${imgCount}" class="img-input"/><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">حذف</button>`;
+  document.getElementById('img-list').appendChild(d);
+}
+function clearSchema() {
+  ['s-url','s-headline','s-desc','s-aname','s-aurl','s-pub','s-logo'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('.img-input').forEach((el,i) => i === 0 ? el.value = '' : el.parentElement.remove());
+  document.getElementById('schema-out').style.display = 'none'; imgCount = 1;
+}
+function generateSchema() {
+  const hl = document.getElementById('s-headline').value.trim();
+  if (!hl) { alert('الرجاء إدخال الـ Headline'); return; }
+  const imgs = Array.from(document.querySelectorAll('.img-input')).map(i => i.value.trim()).filter(Boolean);
+  const aname = document.getElementById('s-aname').value.trim();
+  const pub = document.getElementById('s-pub').value.trim();
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": schemaType,
+    "url": document.getElementById('s-url').value.trim() || undefined,
+    "headline": hl,
+    "image": imgs.length === 1 ? imgs[0] : imgs.length > 1 ? imgs : undefined,
+    "description": document.getElementById('s-desc').value.trim() || undefined,
+    "datePublished": new Date().toISOString().split('T')[0],
+    "author": aname ? { "@type": document.getElementById('s-atype').value, "name": aname, "url": document.getElementById('s-aurl').value.trim() || undefined } : undefined,
+    "publisher": pub ? { "@type": "Organization", "name": pub, "logo": document.getElementById('s-logo').value.trim() ? { "@type": "ImageObject", "url": document.getElementById('s-logo').value.trim() } : undefined } : undefined
+  };
+  // remove undefined keys
+  const clean = JSON.parse(JSON.stringify(schema));
+  const output = `<script type="application/ld+json">\n${JSON.stringify(clean, null, 2)}\n<\/script>`;
+  document.getElementById('schema-code').textContent = output;
+  document.getElementById('schema-out').style.display = 'block';
+}
+
+// ── Meta ──────────────────────────────────────────────────
+async function generateMeta() {
+  const kw = document.getElementById('kw').value.trim();
+  if (!kw) { alert('الرجاء إدخال كلمة مفتاحية'); return; }
+  const ctx = document.getElementById('kw-ctx').value.trim();
+  document.getElementById('meta-loader').style.display = 'block';
+  document.getElementById('meta-out').style.display = 'none';
+  const prompt = `أنت خبير SEO. بناءً على الكلمة المفتاحية: "${kw}"${ctx ? ` والسياق: "${ctx}"` : ''}.\nأعطني JSON فقط بدون أي نص آخر:\n{"meta150":"meta description لا تتجاوز 150 حرف","meta180":"meta description لا تتجاوز 180 حرف","faq":[{"q":"سؤال","a":"جواب"},{"q":"سؤال","a":"جواب"},{"q":"سؤال","a":"جواب"},{"q":"سؤال","a":"جواب"},{"q":"سؤال","a":"جواب"}],"keywords":["كلمة1","كلمة2","كلمة3","كلمة4","كلمة5","كلمة6","كلمة7","كلمة8","كلمة9","كلمة10"]}`;
+  const text = await callClaude(prompt);
+  document.getElementById('meta-loader').style.display = 'none';
+  if (!text) return;
+  try {
+    const d = JSON.parse(text.replace(/```json|```/g,'').trim());
+    document.getElementById('meta-150').textContent = d.meta150;
+    document.getElementById('meta-180').textContent = d.meta180;
+    document.getElementById('meta-faq').innerHTML = d.faq.map((f,i) => `<div class="faq-item"><div class="faq-q">س${i+1}: ${f.q}</div><div class="faq-a">ج: ${f.a}</div></div>`).join('');
+    document.getElementById('meta-kws').innerHTML = d.keywords.map(k => `<span class="kw-tag">${k}</span>`).join('');
+    document.getElementById('meta-out').style.display = 'block';
+  } catch(e) { alert('خطأ في تحليل النتيجة، حاول مرة أخرى'); }
+}
+
+// ── Audit ─────────────────────────────────────────────────
+async function runAudit() {
+  const url = document.getElementById('audit-url').value.trim();
+  if (!url) { alert('الرجاء إدخال رابط الصفحة'); return; }
+  document.getElementById('audit-loader').style.display = 'block';
+  document.getElementById('audit-out').style.display = 'none';
+  const prompt = `أنت خبير SEO. حلل هذا الرابط: "${url}" وأعطني JSON فقط:\n{"score":رقم_0_100,"title_ok":true/false,"meta_ok":true/false,"images_ok":true/false,"social_links":true/false,"whatsapp":true/false,"phone":true/false,"https":true/false,"schema_present":true/false,"total_issues":رقم,"issues":[{"type":"error/warning/ok","title":"عنوان","detail":"تفاصيل"}]}`;
+  const text = await callClaude(prompt);
+  document.getElementById('audit-loader').style.display = 'none';
+  if (!text) return;
+  try {
+    const d = JSON.parse(text.replace(/```json|```/g,'').trim());
+    const sc = d.score >= 70 ? 'green' : d.score >= 40 ? 'amber' : 'red';
+    document.getElementById('audit-stats').innerHTML = `
+      <div class="stat-card ${sc}"><div class="stat-num">${d.score}/100</div><div class="stat-lbl">SEO Score</div></div>
+      <div class="stat-card"><div class="stat-num">${d.total_issues || 0}</div><div class="stat-lbl">مشاكل</div></div>
+      <div class="stat-card ${d.https ? 'green' : 'red'}"><div class="stat-num">${d.https ? '✓' : '✗'}</div><div class="stat-lbl">HTTPS</div></div>
+      <div class="stat-card ${d.schema_present ? 'green' : 'amber'}"><div class="stat-num">${d.schema_present ? '✓' : '✗'}</div><div class="stat-lbl">Schema</div></div>`;
+    const checks = [
+      {l:'Title (أقل من 60 حرف)',ok:d.title_ok},{l:'Meta Description',ok:d.meta_ok},
+      {l:'الصور (أقل من 200kb)',ok:d.images_ok},{l:'روابط سوشيال ميديا',ok:d.social_links},
+      {l:'رابط واتساب',ok:d.whatsapp},{l:'رابط اتصال',ok:d.phone},{l:'HTTPS آمن',ok:d.https},{l:'Schema Markup',ok:d.schema_present}
+    ];
+    document.getElementById('audit-checks').innerHTML = checks.map(c => `<div class="issue-item"><span class="badge ${c.ok ? 'badge-ok' : 'badge-err'}">${c.ok ? 'جيد ✓' : 'مشكلة ✗'}</span><span>${c.l}</span></div>`).join('');
+    document.getElementById('audit-issues').innerHTML = (d.issues || []).map(i => `<div class="issue-item"><span class="badge ${i.type==='error'?'badge-err':i.type==='warning'?'badge-warn':'badge-ok'}">${i.type==='error'?'خطأ':i.type==='warning'?'تحذير':'جيد'}</span><div><strong>${i.title}</strong><br><span style="font-size:12px;color:#6b7280">${i.detail}</span></div></div>`).join('');
+    document.getElementById('audit-out').style.display = 'block';
+  } catch(e) { alert('خطأ في تحليل النتيجة، حاول مرة أخرى'); }
+}
+
+// ── Tips ──────────────────────────────────────────────────
+async function generateTips() {
+  const url = document.getElementById('tips-url').value.trim();
+  if (!url) { alert('الرجاء إدخال رابط الموقع'); return; }
+  const type = document.getElementById('tips-type').value;
+  const lang = document.getElementById('tips-lang').value;
+  const notes = document.getElementById('tips-notes').value.trim();
+  document.getElementById('tips-loader').style.display = 'block';
+  document.getElementById('tips-out').style.display = 'none';
+  const prompt = `أنت خبير SEO متخصص في ${type}. قدم 10 اقتراحات تحسين عملية ومفصلة للموقع: "${url}" (اللغة المستهدفة: ${lang})${notes ? '. ملاحظات: ' + notes : ''}.\n\nلكل اقتراح اكتب:\n[رقم]. [العنوان] | الأولوية: عالية/متوسطة/منخفضة\nالوصف التفصيلي والخطوات العملية.\n\nاكتب بالعربية فقط.`;
+  const text = await callClaude(prompt);
+  document.getElementById('tips-loader').style.display = 'none';
+  if (!text) return;
+  document.getElementById('tips-content').innerHTML = text.replace(/\n/g,'<br>');
+  document.getElementById('tips-out').style.display = 'block';
+}
+</script>
+</body>
+</html>
